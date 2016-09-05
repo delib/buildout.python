@@ -14,3 +14,8 @@ def test(options, buildout):
         output = Popen([python, "-c", "import socket; print (hasattr(socket, 'ssl'))"], stdout=PIPE).communicate()[0]
         if not output.startswith("True"):
             raise IOError("Your python at %s doesn't have ssl support, got: %s" % (python, output))
+
+    output = Popen([python, "-c", "import readline; print (readline)"], stdout=PIPE).communicate()[0]
+    # The leading escape sequence is sometimes printed by readline on import (see https://bugs.python.org/msg191824)
+    if not output.lstrip("\x1b[?1034h").startswith("<module"):
+        raise IOError("Your python at %s doesn't have readline support, got: %s" % (python,output))
